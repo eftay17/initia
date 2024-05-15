@@ -150,10 +150,13 @@ sed -i -e "s/^pruning *=.*/pruning = \"custom\"/" $HOME/.initia/config/app.toml
 sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"100\"/" $HOME/.initia/config/app.toml
 sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"50\"/" $HOME/.initia/config/app.toml
 ```
-### 🚧Snap (opsiyonel)
+### 🚧Snap tek tek gırın (opsiyonel)
 ```
-initiad tendermint unsafe-reset-all --home $HOME/.initia
-curl -o - -L http://37.120.189.81/initia_testnet/initia_snap.tar.lz4 | lz4 -c -d - | tar -x -C $HOME/.initia
+sudo systemctl stop initiad
+initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
+wget https://rpc-initia-testnet.trusted-point.com/latest_snapshot.tar.lz4
+lz4 -d -c ./latest_snapshot.tar.lz4 | tar -xf - -C $HOME/.initia
+sudo systemctl restart initiad && sudo journalctl -u initiad -f -o cat
 ```
 ### 🚧Başlatalım   
 ```
