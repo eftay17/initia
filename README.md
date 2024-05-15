@@ -153,11 +153,24 @@ sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"50\"/" $HOME/.initia/co
 ### 🚧Snap tek tek gırın (opsiyonel)
 ```
 sudo systemctl stop initiad
+```
+
+```
 initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
+```
+
+```
 wget https://rpc-initia-testnet.trusted-point.com/latest_snapshot.tar.lz4
+```
+
+```
 lz4 -d -c ./latest_snapshot.tar.lz4 | tar -xf - -C $HOME/.initia
+```
+
+```
 sudo systemctl restart initiad && sudo journalctl -u initiad -f -o cat
 ```
+
 ### 🚧Başlatalım   
 ```
 sudo systemctl daemon-reload
