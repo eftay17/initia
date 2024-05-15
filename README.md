@@ -173,6 +173,13 @@ initiad keys add cuzdan-adini-yaz
 ```
 initiad keys add wallet --recover
 ```
+### 🚧Sync kontrol
+```
+initiad status | jq
+```
+çıktısı
+"catching_up": false olmalı sonra aşağıdaki adımları yapabilirsiniz...
+
 
 ### 🚧Validator oluşturma
 
