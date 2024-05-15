@@ -1,61 +1,78 @@
-# Initia
+<h1 align="center"> INITIA
 
-> Selamlar Initia Ödüllü Testneti Başladı - Node ve App testneti hakkında yapmanız gerekenleri anlatıyorum adım adım.
 
-> Tüm EXP'leri toplayacağım ve Node'un peşini şimdilik bırakmyacağım
+![image](https://github.com/molla202/pokemon/assets/91562185/c0d15ba5-72dd-4dcf-9766-3a4e72e42627)
 
-> Node içinde görevler olacak Telegramda paylaşacağım
 
-> Not: Repo'yu hızlıca hazıralayıp paylaşıp 1-2 saat içerssinde sık sık update edicem f5 basarsınız.
+</h1>
 
-> Not2: Repoyu sıfırdan hazırlama mümkünatım yok şu an önemli proje diye bir çok yerden parça parça peer-seed ve snapshot topladım.
 
-## Donanım
+ * [Topluluk kanalımız](https://t.me/corenodechat)<br>
+ * [Topluluk Twitter](https://twitter.com/corenodeHQ)<br>
+ * [Discord](https://discord.com/invite/0glabs)<br>
+ * [Twitter](https://twitter.com/0G_labs)<br>
+ * [Discord](https://discord.gg/initia)<br>
 
+## FAUCET 
+
+https://faucet.testnet.initia.xyz/
+
+## Explorer
+
+https://scan.testnet.initia.xyz/initiation-1
+
+## 💻 Sistem Gereksinimleri
+| Bileşenler | Minimum Gereksinimler | 
+| ------------ | ------------ |
+| CPU |	4|
+| RAM	| 8+ GB |
+| Storage	| 400 GB SSD |
+| System	| Ubuntu 22.04 OR 20.04 |
+
+### 🚧Gerekli kurulumlar
 ```
-4 CPU - 8 RAM 160 GB SSD
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -y
 ```
 
-## Kurulum
-
-* `#`ile başlayan notları es geçmeyin lütfen.
-```console
-sudo apt update -y && sudo apt upgrade -y
-sudo apt -qy install curl git jq lz4 build-essential
-
-# Tırnakların arasını doldurun
-MONIKER="Validatör İsminizi girin"
-
+### 🚧 Go kurulumu
+```
+cd $HOME
+VER="1.21.3"
+wget "https://golang.org/dl/go$VER.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
-curl -Ls https://go.dev/dl/go1.21.10.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local
-eval $(echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/golang.sh)
-eval $(echo 'export PATH=$PATH:$HOME/go/bin' | tee -a $HOME/.profile)
+sudo tar -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
+rm "go$VER.linux-amd64.tar.gz"
+[ ! -f ~/.bash_profile ] && touch ~/.bash_profile
+echo "export PATH=$PATH:/usr/local/go/bin:~/go/bin" >> ~/.bash_profile
+source $HOME/.bash_profile
+[ ! -d ~/go/bin ] && mkdir -p ~/go/bin
+```
 
-
-git clone https://github.com/initia-labs/initia.git
+### 🚧Dosyaları çekelim
+```
+git clone https://github.com/initia-labs/initia
 cd initia
-
-# uzun sürer build
+git checkout v0.2.11
 make build
+```
 
+```
 mkdir -p $HOME/.initia/cosmovisor/genesis/bin
-mv build/initiad $HOME/.initia/cosmovisor/genesis/bin/
-rm -rf build
-
-
+mv /root/initia/build/initiad $HOME/.initia/cosmovisor/genesis/bin/
+```
+### 🚧System link
+```
 sudo ln -s $HOME/.initia/cosmovisor/genesis $HOME/.initia/cosmovisor/current -f
 sudo ln -s $HOME/.initia/cosmovisor/current/bin/initiad /usr/local/bin/initiad -f
-
-# uzun sürer
+```
+### 🚧Cosmovisor indirelim
+```
 go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
 ```
-
-## Servis dosyası oluşumu ve node başlatma
-
-```console
-
-# sudo tee 'den EOF'a kadar birleşik
-sudo tee /etc/systemd/system/initia.service > /dev/null << EOF
+### 🚧Servis oluşturalım
+```
+sudo tee /etc/systemd/system/initiad.service > /dev/null << EOF
 [Unit]
 Description=initia node service
 After=network-online.target
@@ -75,110 +92,137 @@ Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/
 WantedBy=multi-user.target
 EOF
 ```
-
-```console
+```
 sudo systemctl daemon-reload
-sudo systemctl enable initia.service
+sudo systemctl enable initiad.service
 ```
-
-## İnitalize işlemleri
-
-```console
-
-# Hepsini toplu girebilirsiniz
-
+### 🚧İnit
+NOT: node adınızı yazınız.
+```
 initiad config set client chain-id initiation-1
+initiad config set client node tcp://localhost:15657
 initiad config set client keyring-backend test
-initiad config set client node tcp://localhost:17957
-
-initiad init $MONIKER --chain-id initiation-1
-
-curl -Ls https://snapshots.kjnodes.com/initia-testnet/genesis.json > $HOME/.initia/config/genesis.json
-curl -Ls https://snapshots.kjnodes.com/initia-testnet/addrbook.json > $HOME/.initia/config/addrbook.json
-
-sed -i -e "s|^seeds *=.*|seeds = \"3f472746f46493309650e5a033076689996c8881@initia-testnet.rpc.kjnodes.com:17959\"|" $HOME/.initia/config/config.toml
-
+```
+```
+initiad init NODE-ADI-YAZ --chain-id initiation-1
+```
+### 🚧Genesis addrbook
+```
+rm ~/.initia/config/genesis.json
+curl -Ls https://raw.githubusercontent.com/molla202/pokemon/main/genesis.json > $HOME/.initia/config/genesis.json
+curl -Ls https://raw.githubusercontent.com/Core-Node-Team/Testnet-TR/main/Initia/addrbook.json > $HOME/.initia/config/addrbook.json
+```
+### 🚧Port Ayarları
+```
+echo "export N_PORT="15"" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
+```
+sed -i.bak -e "s%:1317%:${N_PORT}317%g;
+s%:8080%:${N_PORT}080%g;
+s%:9090%:${N_PORT}090%g;
+s%:9091%:${N_PORT}091%g;
+s%:8545%:${N_PORT}545%g;
+s%:8546%:${N_PORT}546%g;
+s%:6065%:${N_PORT}065%g" $HOME/.initia/config/app.toml
+```
+```
+sed -i.bak -e "s%:26658%:${N_PORT}658%g;
+s%:26657%:${N_PORT}657%g;
+s%:6060%:${N_PORT}060%g;
+s%:26656%:${N_PORT}656%g;
+s%^external_address = \"\"%external_address = \"$(wget -qO- eth0.me):${N_PORT}656\"%;
+s%:26660%:${N_PORT}660%g" $HOME/.initia/config/config.toml
+```
+### 🚧Seed
+```
+PEERS="a3660a8b7a0d88b12506787b26952930f1774fc2@65.21.69.53:48656,e3ac92ce5b790c76ce07c5fa3b257d83a517f2f6@178.18.251.146:30656,2692225700832eb9b46c7b3fc6e4dea2ec044a78@34.126.156.141:26656,2a574706e4a1eba0e5e46733c232849778faf93b@84.247.137.184:53456,40d3f977d97d3c02bd5835070cc139f289e774da@168.119.10.134:26313,1f6633bc18eb06b6c0cab97d72c585a6d7a207bc@65.109.59.22:25756,4a988797d8d8473888640b76d7d238b86ce84a2c@23.158.24.168:26656,e3679e68616b2cd66908c460d0371ac3ed7795aa@176.34.17.102:26656,d2a8a00cd5c4431deb899bc39a057b8d8695be9e@138.201.37.195:53456,329227cf8632240914511faa9b43050a34aa863e@43.131.13.84:26656,517c8e70f2a20b8a3179a30fe6eb3ad80c407c07@37.60.231.212:26656,07632ab562028c3394ee8e78823069bfc8de7b4c@37.27.52.25:19656,028999a1696b45863ff84df12ebf2aebc5d40c2d@37.27.48.77:26656,3c44f7dbb473fee6d6e5471f22fa8d8095bd3969@185.219.142.137:53456,8db320e665dbe123af20c4a5c667a17dc146f4d0@51.75.144.149:26656,c424044f3249e73c050a7b45eb6561b52d0db456@158.220.124.183:53456,767fdcfdb0998209834b929c59a2b57d474cc496@207.148.114.112:26656,edcc2c7098c42ee348e50ac2242ff897f51405e9@65.109.34.205:36656,140c332230ac19f118e5882deaf00906a1dba467@185.219.142.119:53456,4eb031b59bd0210481390eefc656c916d47e7872@37.60.248.151:53456,ff9dbc6bb53227ef94dc75ab1ddcaeb2404e1b0b@178.170.47.171:26656,ffb9874da3e0ead65ad62ac2b569122f085c0774@149.28.134.228:26656" && \
+SEEDS="2eaa272622d1ba6796100ab39f58c75d458b9dbc@34.142.181.82:26656,c28827cb96c14c905b127b92065a3fb4cd77d7f6@testnet-seeds.whispernode.com:25756" && \
+sed -i -e "s/^seeds *=.*/seeds = \"$SEEDS\"/; s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" $HOME/.initia/config/config.toml
+```
+### 🚧Gas pruning ayarı
+```
 sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.15uinit,0.01uusdc\"|" $HOME/.initia/config/app.toml
-
-sed -i \
-  -e 's|^pruning *=.*|pruning = "custom"|' \
-  -e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
-  -e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
-  -e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
-  $HOME/.initia/config/app.toml
-
-sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:17958\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:17957\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:17960\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:17956\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":17966\"%" $HOME/.initia/config/config.toml
-sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:17917\"%; s%^address = \":8080\"%address = \":17980\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:17990\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:17991\"%; s%:8545%:17945%; s%:8546%:17946%; s%:6065%:17965%" $HOME/.initia/config/app.toml
-
-curl -L https://snapshots.kjnodes.com/initia-testnet/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.initia
-[[ -f $HOME/.initia/data/upgrade-info.json ]] && cp $HOME/.initia/data/upgrade-info.json $HOME/.initia/cosmovisor/genesis/upgrade-info.json
-
-sudo systemctl start initia.service && sudo journalctl -u initia.service -f --no-hostname -o cat
+```
+### 🚧Pruning
+```
+sed -i -e "s/^pruning *=.*/pruning = \"custom\"/" $HOME/.initia/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"100\"/" $HOME/.initia/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"50\"/" $HOME/.initia/config/app.toml
+```
+### 🚧Snap (opsiyonel)
+```
+initiad tendermint unsafe-reset-all --home $HOME/.initia
+curl -o - -L http://37.120.189.81/initia_testnet/initia_snap.tar.lz4 | lz4 -c -d - | tar -x -C $HOME/.initia
+```
+### 🚧Başlatalım   
+```
+sudo systemctl daemon-reload
+sudo systemctl restart initiad
+```
+### 🚧Log
+```
+sudo journalctl -u initiad.service -f --no-hostname -o cat
+```
+### 🚧Cüzdan oluşturma
+NOT: cüzdan adınızı yazınız
+```
+initiad keys add cuzdan-adini-yaz
+```
+- Eski cüzdan import ederkene bele
+```
+initiad keys add wallet --recover
 ```
 
-## Cüzdan oluşturma ve app
+### 🚧Validator oluşturma
 
-```console
-initiad keys add wallet
-
-# buradan gelen cüzdan bilgilerini keplr'a import edin hızlıca.
-# Faucetten token alın aşağıda link.
+NOT: cüzdan adını moniker adınızı yazınız
 ```
-
-> https://faucet.testnet.initia.xyz/
-
-
-## App'e giriş
-
-> https://app.testnet.initia.xyz/xp
-
-> Cüzdanı import ettikten sonra acil 6 görevi yapıp NFT'leri mintliyorsunuz
-
-> Mintledikten sonra NFT'yi birleştiriyorsunuz.
-
-> Görevler hata verirse tekrar tekrar deneyin çözülüyor.
-
-> NFT birleştikten sonra beslemeyi unutmayın (sayaç var, erkenci olmak bir kaç adım öne atar)
-
-> Sağ alttan Ear More EXP'yi hemen alın (sayaç var)
-
-> 50 EXP için kullanabilirsiniz: `UNOVN51J`
-
-> Jennie'ye sahip çıkalım.
-
-> [Mint](https://init-ai.testnet.initia.xyz/mint/0xf7b2c7393a82d06f87908dd8dd58378f3fef10e83bcfdf7c5fc22c1a185d5097) yapabilirsiniz bunu da.
-
-## Validatör kurulumu:
-```console
-initiad config set client keyring-backend test
-
-# Aşağıda 'tırnak içlerine' yorumları ekledim okuyup düzenleyin.
 initiad tx mstaking create-validator \
---amount 1000000uinit \
---pubkey $(initiad tendermint show-validator) \
---moniker "Validatör İsmi" \
---identity "Yoksa bu satırı sil" \
---details "Rues Community" \
---website "Twitter veya Github Koyun" \
---chain-id initiation-1 \
---commission-rate 0.05 \
---commission-max-rate 0.20 \
---commission-max-change-rate 0.05 \
---from wallet \
+  --amount=5000000uinit \
+  --pubkey=$(initiad tendermint show-validator) \
+  --moniker=MONIKER-YAZ \
+  --chain-id=initiation-1 \
+  --commission-rate=0.05 \
+  --commission-max-rate=0.10 \
+  --commission-max-change-rate=0.01 \
+  --from=CUZDAN-ADI-YAZ \
+  --identity="" \
+  --website="" \
+  --details="" \
+  --node=http://localhost:15657 \
+  --gas-adjustment 1.4 \
+  --gas auto \
+  --gas-prices 0.15uinit \
+  -y
+```
+### Edit validator
+```
+initiad tx mstaking edit-validator \
+--moniker "isim-yaz" \
+--from cüzdan-adi-yaz \
 --gas-adjustment 1.4 \
---gas 1000000 \
+--gas auto \
 --gas-prices 0.15uinit \
---node tcp://localhost:17957
+-y
+```
+### Kendine delege
+NOT: 
+```bash
+initiad tx mstaking delegate $(initiad keys show wallet --bech val -a)  miktar000000uinit --from wallet --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit --node=http://localhost:15657 -y
+```
+### Unjail
+```
+initiad tx slashing unjail --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit --node=http://localhost:15657 -y
+```
+### Ödülleri çek
+```
+initiad tx distribution withdraw-rewards $(initiad keys show wallet --bech val -a) --commission --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit --node=http://localhost:15657 -y
+```
+### Oy kullan
+```
+initiad tx gov vote 75 yes --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit --node=http://localhost:15657 -y
 ```
 
-> [Explorer Adresi ve Örnek](https://scan.testnet.initia.xyz/initiation-1/validators/initvaloper1pukhdez2qnmrprrmnxr7e9mln4ll2upxs96hy7)
 
-> tx hash aldıktan sonra explorerda aratın biraz aşağıda validatör adresiniz olcak oraya tıkalyın
 
-<img width="1287" alt="Ekran Resmi 2024-05-15 00 51 09" src="https://github.com/ruesandora/Initia/assets/101149671/1c3c114a-9caf-4560-b963-59aad7804bf6">
-
-> Hayırlı olsun, repoyu zamanla güncelleyeceğim ve node görevlerini ekleyeceğim bu repo'ya dosya olarak.
-
-## Görevler
-
-> Görev-1: [Oracle](https://github.com/ruesandora/Initia/blob/main/%231-Oracle.md)
