@@ -196,7 +196,39 @@ initiad tx mstaking create-validator \
   --gas-prices 0.15uinit \
   -y
 ```
-### Edit validator
+> [Explorer Adresi ve Örnek](https://scan.testnet.initia.xyz/initiation-1/validators/initvaloper1pukhdez2qnmrprrmnxr7e9mln4ll2upxs96hy7)
+
+> tx hash aldıktan sonra explorerda aratın biraz aşağıda validatör adresiniz olcak oraya tıkalyın
+
+<img width="1287" alt="Ekran Resmi 2024-05-15 00 51 09" src="https://github.com/ruesandora/Initia/assets/101149671/1c3c114a-9caf-4560-b963-59aad7804bf6">
+
+> Hayırlı olsun, repoyu zamanla güncelleyeceğim ve node görevlerini ekleyeceğim bu repo'ya dosya olarak.
+
+İşlemler buraya kadar 
+Sayfanın altındaki görevleri yapmayı unutmayın.....
+## App'e giriş
+
+> https://app.testnet.initia.xyz/xp
+
+> Cüzdanı import ettikten sonra acil 6 görevi yapıp NFT'leri mintliyorsunuz
+
+> Mintledikten sonra NFT'yi birleştiriyorsunuz.
+
+> Görevler hata verirse tekrar tekrar deneyin çözülüyor.
+
+> NFT birleştikten sonra beslemeyi unutmayın (sayaç var, erkenci olmak bir kaç adım öne atar)
+
+> Sağ alttan Ear More EXP'yi hemen alın (sayaç var)
+
+> 50 EXP için kullanabilirsiniz: `UNOVN51J`
+
+> Jennie'ye sahip çıkalım.
+
+> [Mint](https://init-ai.testnet.initia.xyz/mint/0xf7b2c7393a82d06f87908dd8dd58378f3fef10e83bcfdf7c5fc22c1a185d5097) yapabilirsiniz bunu da.
+
+
+
+### Edit validator burayı ilerde yaparsınız degıstırmek ıcın
 ```
 initiad tx mstaking edit-validator \
 --moniker "isim-yaz" \
@@ -224,5 +256,8 @@ initiad tx distribution withdraw-rewards $(initiad keys show wallet --bech val -
 initiad tx gov vote 75 yes --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit --node=http://localhost:15657 -y
 ```
 
+## Görevler
+
+> Görev-1: [Oracle](https://github.com/eftay17/initia/blob/main/oracle.md)
 
 
